@@ -1,0 +1,97 @@
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+  --primary:#2563eb; --primary-hover:#1d4ed8;
+  --income:#059669; --expense:#dc2626; --remaining:#7c3aed;
+  --border:#e5e7eb; --shadow:0 2px 10px rgba(0,0,0,.06);
+  --radius:14px;
+}
+body.dark{
+  --bg:#0f172a; --card:#1e293b; --text:#f1f5f9; --muted:#94a3b8;
+  --border:#334155; --shadow:0 2px 10px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+.container{max-width:1100px;margin:auto;padding:0 16px}
+
+/* الشريط العلوي */
+.topbar{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:14px 0;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.topbar-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.topbar h1{font-size:22px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.month-picker{font-size:14px;display:flex;align-items:center;gap:6px}
+.month-picker input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:8px;padding:6px 8px}
+.month-picker input::-webkit-calendar-picker-indicator{filter:invert(1)}
+
+/* البطاقات */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:20px 0}
+.card{background:var(--card);border-radius:var(--radius);padding:18px;display:flex;gap:14px;align-items:center;box-shadow:var(--shadow);border-right:5px solid var(--primary)}
+.card.income{border-right-color:var(--income)}
+.card.expense{border-right-color:var(--expense)}
+.card.remaining{border-right-color:var(--remaining)}
+.card-icon{font-size:34px}
+.card h3{font-size:14px;color:var(--muted);font-weight:600}
+.card-value{font-size:24px;font-weight:800;margin-top:4px}
+.card.income .card-value{color:var(--income)}
+.card.expense .card-value{color:var(--expense)}
+.card.remaining .card-value{color:var(--remaining)}
+.card small{color:var(--muted)}
+
+/* اللوحات */
+.panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:20px;border:1px solid var(--border)}
+.panel h2{font-size:17px;margin-bottom:14px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:850px){.grid-2{grid-template-columns:1fr}}
+
+/* التبويبات */
+.panel-tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab-btn{padding:10px 18px;border:none;border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;font-weight:700;transition:.2s}
+.tab-btn.active{background:var(--primary);color:#fff}
+
+/* النموذج */
+.form-row{display:flex;flex-wrap:wrap;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:6px;min-width:150px}
+.form-group.grow{flex:1;min-width:180px}
+.form-group label{font-size:13px;color:var(--muted);font-weight:600}
+.form-group input,.form-group select{padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);color:var(--text);transition:border .2s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary)}
+.form-group.align-end{justify-content:flex-end}
+.hidden{display:none}
+
+/* الأزرار */
+.btn{border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-ghost{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--primary)}
+.btn-danger{background:#fee2e2;color:#b91c1c}
+.btn-danger:hover{background:#fecaca}
+.btn-sm{padding:6px 10px;font-size:13px;border-radius:8px}
+body.dark .btn-danger{background:#7f1d1d;color:#fecaca}
+
+/* قائمة البنود */
+.cat-list{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto}
+.cat-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:var(--bg)}
+.cat-item .name{flex:1;font-weight:600}
+.cat-item .bar{height:8px;border-radius:6px;background:var(--primary);min-width:4px}
+.cat-item .val{font-weight:800;white-space:nowrap}
+
+/* الجدول */
+.search{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);margin-bottom:12px;font-size:14px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--border)}
+th{background:var(--bg);color:var(--muted);font-weight:700}
+tr:hover td{background:rgba(37,99,235,.05)}
+.tag{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.tag.income{background:#d1fae5;color:#065f46}
+.tag.expense{background:#fee2e2;color:#991b1b}
+body.dark .tag.income{background:#064e3b;color:#a7f3d0}
+body.dark .tag.expense{background:#7f1d1d;color:#fca5a5}
+.amount-in{color:var(--income);font-weight:800}
+.amount-out{color:var(--expense);font-weight:800}
+.del-btn{background:none;border:none;cursor:pointer;font-size:16px;opacity:.6}
+.del-btn:hover{opacity:1}
+
+footer{text-align:center;color:var(--muted);font-size:13px;padding:20px 0}
+@media print{.topbar,.panel-tabs,.entry-form,.topbar-actions,footer,.search,.del-btn{display:none}}

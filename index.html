@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مصروفاتي - ميزانية البيت</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <h1>💰 مصروفاتي</h1>
+    <div class="topbar-actions">
+      <label class="month-picker">
+        شهر الحسابات:
+        <input type="month" id="monthFilter">
+      </label>
+      <button class="btn btn-ghost" id="btnTheme" title="تبديل المظهر">🌙</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- بطاقات الملخص -->
+  <section class="cards" id="summaryCards">
+    <div class="card income">
+      <div class="card-icon">💵</div>
+      <div>
+        <h3>إجمالي الدخل</h3>
+        <p class="card-value" id="totalIncome">0 ج.م</p>
+      </div>
+    </div>
+    <div class="card expense">
+      <div class="card-icon">🧾</div>
+      <div>
+        <h3>إجمالي المصروفات</h3>
+        <p class="card-value" id="totalExpense">0 ج.م</p>
+      </div>
+    </div>
+    <div class="card remaining">
+      <div class="card-icon">🏦</div>
+      <div>
+        <h3>الباقي</h3>
+        <p class="card-value" id="remaining">0 ج.م</p>
+        <small id="remainingHint"></small>
+      </div>
+    </div>
+  </section>
+
+  <!-- نموذج الإدخال -->
+  <section class="panel">
+    <div class="panel-tabs">
+      <button class="tab-btn active" data-tab="expense">➕ إضافة مصروف</button>
+      <button class="tab-btn" data-tab="income">➕ إضافة دخل</button>
+    </div>
+
+    <form id="expenseForm" class="entry-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>البند</label>
+          <select id="expCategory" required></select>
+        </div>
+        <div class="form-group grow">
+          <label>التفاصيل (اختياري)</label>
+          <input type="text" id="expDesc" placeholder="مثال: تسوق الأسبوع الأول">
+        </div>
+        <div class="form-group">
+          <label>السعر (ج.م)</label>
+          <input type="number" id="expAmount" min="0" step="0.01" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+          <label>التاريخ</label>
+          <input type="date" id="expDate" required>
+        </div>
+        <div class="form-group align-end">
+          <button type="submit" class="btn btn-primary">إضافة ✔</button>
+        </div>
+      </div>
+    </form>
+
+    <form id="incomeForm" class="entry-form hidden">
+      <div class="form-row">
+        <div class="form-group grow">
+          <label>مصدر الدخل</label>
+          <input type="text" id="incDesc" placeholder="مثال: مرتب الشهر">
+        </div>
+        <div class="form-group">
+          <label>المبلغ (ج.م)</label>
+          <input type="number" id="incAmount" min="0" step="0.01" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+          <label>التاريخ</label>
+          <input type="date" id="incDate" required>
+        </div>
+        <div class="form-group align-end">
+          <button type="submit" class="btn btn-primary">إضافة ✔</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- المخطط + إجمالي كل بند -->
+  <section class="grid-2">
+    <div class="panel">
+      <h2>📊 توزيع المصروفات على البنود</h2>
+      <canvas id="chart" height="260"></canvas>
+    </div>
+    <div class="panel">
+      <h2>📋 إجمالي كل بند</h2>
+      <div class="cat-list" id="catList"></div>
+    </div>
+  </section>
+
+  <!-- السجل -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>📖 سجل العمليات</h2>
+      <div>
+        <button class="btn btn-ghost" id="btnExport">⬇️ تصدير Excel/CSV</button>
+        <button class="btn btn-ghost" id="btnPrint">🖨️ طباعة</button>
+        <button class="btn btn-danger" id="btnClear">🗑️ مسح الشهر</button>
+      </div>
+    </div>
+    <input type="text" id="search" class="search" placeholder="🔍 ابحث في السجل...">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>النوع</th><th>البند / المصدر</th><th>التفاصيل</th>
+            <th>المبلغ</th><th>التاريخ</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>بياناتك محفوظة على جهازك تلقائيًا (LocalStorage) 🔒</p>
+  </footer>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
