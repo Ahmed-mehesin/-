@@ -2,10 +2,109 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2563eb">
 <title>مصروفاتي - ميزانية البيت</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+  --primary:#2563eb; --primary-hover:#1d4ed8;
+  --income:#059669; --expense:#dc2626; --remaining:#7c3aed;
+  --border:#e5e7eb; --shadow:0 2px 10px rgba(0,0,0,.06);
+  --radius:14px;
+}
+body.dark{
+  --bg:#0f172a; --card:#1e293b; --text:#f1f5f9; --muted:#94a3b8;
+  --border:#334155; --shadow:0 2px 10px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+.container{max-width:1100px;margin:auto;padding:0 14px}
+
+/* الشريط العلوي */
+.topbar{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:14px 0;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.topbar-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.topbar h1{font-size:20px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.month-picker{font-size:14px;display:flex;align-items:center;gap:6px}
+.month-picker input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:8px;padding:8px;font-size:16px}
+.month-picker input::-webkit-calendar-picker-indicator{filter:invert(1)}
+
+/* البطاقات */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0}
+.card{background:var(--card);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);border-right:5px solid var(--primary)}
+.card.income{border-right-color:var(--income)}
+.card.expense{border-right-color:var(--expense)}
+.card.remaining{border-right-color:var(--remaining)}
+.card-icon{font-size:30px}
+.card h3{font-size:13px;color:var(--muted);font-weight:600}
+.card-value{font-size:21px;font-weight:800;margin-top:4px;word-break:break-all}
+.card.income .card-value{color:var(--income)}
+.card.expense .card-value{color:var(--expense)}
+.card.remaining .card-value{color:var(--remaining)}
+.card small{color:var(--muted)}
+
+/* اللوحات */
+.panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:18px;border:1px solid var(--border)}
+.panel h2{font-size:16px;margin-bottom:14px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:850px){.grid-2{grid-template-columns:1fr}}
+
+/* التبويبات */
+.panel-tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab-btn{flex:1;padding:13px 10px;border:none;border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;font-weight:700;font-size:15px;transition:.2s}
+.tab-btn.active{background:var(--primary);color:#fff}
+
+/* النموذج */
+.form-row{display:flex;flex-wrap:wrap;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px}
+.form-group.grow{flex:2;min-width:160px}
+.form-group label{font-size:13px;color:var(--muted);font-weight:600}
+.form-group input,.form-group select{padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;background:var(--bg);color:var(--text);transition:border .2s;width:100%}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary)}
+.form-group.align-end{justify-content:flex-end;flex:0}
+.hidden{display:none}
+
+/* الأزرار */
+.btn{border:none;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;min-height:44px}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-ghost{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+.btn-danger{background:#fee2e2;color:#b91c1c}
+body.dark .btn-danger{background:#7f1d1d;color:#fecaca}
+.head-btns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* قائمة البنود */
+.cat-list{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto}
+.cat-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;background:var(--bg)}
+.cat-item .name{flex:1;font-weight:600;font-size:14px}
+.cat-item .bar{height:8px;border-radius:6px;background:var(--primary);min-width:4px}
+.cat-item .val{font-weight:800;white-space:nowrap;font-size:14px}
+
+/* الجدول */
+.search{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);margin-bottom:12px;font-size:16px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+th{background:var(--bg);color:var(--muted);font-weight:700}
+tr:active td{background:rgba(37,99,235,.08)}
+.tag{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.tag.income{background:#d1fae5;color:#065f46}
+.tag.expense{background:#fee2e2;color:#991b1b}
+body.dark .tag.income{background:#064e3b;color:#a7f3d0}
+body.dark .tag.expense{background:#7f1d1d;color:#fca5a5}
+.amount-in{color:var(--income);font-weight:800}
+.amount-out{color:var(--expense);font-weight:800}
+.del-btn{background:#fee2e2;border:none;border-radius:8px;cursor:pointer;font-size:15px;padding:6px 10px}
+body.dark .del-btn{background:#7f1d1d}
+
+canvas{max-width:100%;display:block;margin:auto}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:20px 0}
+@media print{.topbar,.panel-tabs,.entry-form,.topbar-actions,footer,.search,.del-btn,.head-btns{display:none}}
+</style>
 </head>
 <body>
 
@@ -13,10 +112,7 @@
   <div class="container topbar-inner">
     <h1>💰 مصروفاتي</h1>
     <div class="topbar-actions">
-      <label class="month-picker">
-        شهر الحسابات:
-        <input type="month" id="monthFilter">
-      </label>
+      <label class="month-picker">الشهر: <input type="month" id="monthFilter"></label>
       <button class="btn btn-ghost" id="btnTheme" title="تبديل المظهر">🌙</button>
     </div>
   </div>
@@ -24,33 +120,21 @@
 
 <main class="container">
 
-  <!-- بطاقات الملخص -->
-  <section class="cards" id="summaryCards">
+  <section class="cards">
     <div class="card income">
       <div class="card-icon">💵</div>
-      <div>
-        <h3>إجمالي الدخل</h3>
-        <p class="card-value" id="totalIncome">0 ج.م</p>
-      </div>
+      <div><h3>إجمالي الدخل</h3><p class="card-value" id="totalIncome">0 ج.م</p></div>
     </div>
     <div class="card expense">
       <div class="card-icon">🧾</div>
-      <div>
-        <h3>إجمالي المصروفات</h3>
-        <p class="card-value" id="totalExpense">0 ج.م</p>
-      </div>
+      <div><h3>إجمالي المصروفات</h3><p class="card-value" id="totalExpense">0 ج.م</p></div>
     </div>
     <div class="card remaining">
       <div class="card-icon">🏦</div>
-      <div>
-        <h3>الباقي</h3>
-        <p class="card-value" id="remaining">0 ج.م</p>
-        <small id="remainingHint"></small>
-      </div>
+      <div><h3>الباقي</h3><p class="card-value" id="remaining">0 ج.م</p><small id="remainingHint"></small></div>
     </div>
   </section>
 
-  <!-- نموذج الإدخال -->
   <section class="panel">
     <div class="panel-tabs">
       <button class="tab-btn active" data-tab="expense">➕ إضافة مصروف</button>
@@ -59,67 +143,41 @@
 
     <form id="expenseForm" class="entry-form">
       <div class="form-row">
-        <div class="form-group">
-          <label>البند</label>
-          <select id="expCategory" required></select>
-        </div>
-        <div class="form-group grow">
-          <label>التفاصيل (اختياري)</label>
-          <input type="text" id="expDesc" placeholder="مثال: تسوق الأسبوع الأول">
-        </div>
-        <div class="form-group">
-          <label>السعر (ج.م)</label>
-          <input type="number" id="expAmount" min="0" step="0.01" placeholder="0.00" required>
-        </div>
-        <div class="form-group">
-          <label>التاريخ</label>
-          <input type="date" id="expDate" required>
-        </div>
-        <div class="form-group align-end">
-          <button type="submit" class="btn btn-primary">إضافة ✔</button>
-        </div>
+        <div class="form-group"><label>البند</label><select id="expCategory" required></select></div>
+        <div class="form-group grow"><label>التفاصيل (اختياري)</label><input type="text" id="expDesc" placeholder="مثال: تسوق الأسبوع الأول"></div>
+        <div class="form-group"><label>السعر (ج.م)</label><input type="number" id="expAmount" min="0" step="0.01" placeholder="0.00" required></div>
+        <div class="form-group"><label>التاريخ</label><input type="date" id="expDate" required></div>
       </div>
+      <div style="margin-top:12px"><button type="submit" class="btn btn-primary" style="width:100%">إضافة المصروف ✔</button></div>
     </form>
 
     <form id="incomeForm" class="entry-form hidden">
       <div class="form-row">
-        <div class="form-group grow">
-          <label>مصدر الدخل</label>
-          <input type="text" id="incDesc" placeholder="مثال: مرتب الشهر">
-        </div>
-        <div class="form-group">
-          <label>المبلغ (ج.م)</label>
-          <input type="number" id="incAmount" min="0" step="0.01" placeholder="0.00" required>
-        </div>
-        <div class="form-group">
-          <label>التاريخ</label>
-          <input type="date" id="incDate" required>
-        </div>
-        <div class="form-group align-end">
-          <button type="submit" class="btn btn-primary">إضافة ✔</button>
-        </div>
+        <div class="form-group grow"><label>مصدر الدخل</label><input type="text" id="incDesc" placeholder="مثال: مرتب الشهر"></div>
+        <div class="form-group"><label>المبلغ (ج.م)</label><input type="number" id="incAmount" min="0" step="0.01" placeholder="0.00" required></div>
+        <div class="form-group"><label>التاريخ</label><input type="date" id="incDate" required></div>
       </div>
+      <div style="margin-top:12px"><button type="submit" class="btn btn-primary" style="width:100%">إضافة الدخل ✔</button></div>
     </form>
   </section>
 
-  <!-- المخطط + إجمالي كل بند -->
   <section class="grid-2">
     <div class="panel">
       <h2>📊 توزيع المصروفات على البنود</h2>
-      <canvas id="chart" height="260"></canvas>
+      <canvas id="chart" width="360" height="280"></canvas>
+      <div id="chartEmpty" style="text-align:center;color:var(--muted);padding:20px;display:none">لا توجد مصروفات بعد 🎉</div>
     </div>
     <div class="panel">
       <h2>📋 إجمالي كل بند</h2>
-      <div class="cat-list" id="catList"></div>
+      <div class="catList" id="catList"></div>
     </div>
   </section>
 
-  <!-- السجل -->
   <section class="panel">
     <div class="panel-head">
       <h2>📖 سجل العمليات</h2>
-      <div>
-        <button class="btn btn-ghost" id="btnExport">⬇️ تصدير Excel/CSV</button>
+      <div class="head-btns">
+        <button class="btn btn-ghost" id="btnExport">⬇️ تصدير Excel</button>
         <button class="btn btn-ghost" id="btnPrint">🖨️ طباعة</button>
         <button class="btn btn-danger" id="btnClear">🗑️ مسح الشهر</button>
       </div>
@@ -127,22 +185,288 @@
     <input type="text" id="search" class="search" placeholder="🔍 ابحث في السجل...">
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>النوع</th><th>البند / المصدر</th><th>التفاصيل</th>
-            <th>المبلغ</th><th>التاريخ</th><th></th>
-          </tr>
-        </thead>
+        <thead><tr><th>النوع</th><th>البند / المصدر</th><th>التفاصيل</th><th>المبلغ</th><th>التاريخ</th><th></th></tr></thead>
         <tbody id="logBody"></tbody>
       </table>
     </div>
   </section>
 
-  <footer>
-    <p>بياناتك محفوظة على جهازك تلقائيًا (LocalStorage) 🔒</p>
-  </footer>
+  <footer>بياناتك محفوظة على جهازك تلقائيًا 🔒</footer>
 </main>
 
-<script src="app.js"></script>
+<script>
+"use strict";
+/* ====== الإعدادات ====== */
+var CATEGORIES = ["تسويكة الأسبوع","سمك ولحمة","مستلزمات البيت","باقات شخصية","باقات العائلة","كهرباء","علاج","ملابس","عناية شخصية","اكل سكن","مواصلات","اشتراكات","خروجات","أقساط"];
+var STORE_KEY = "masrofati-data-v1";
+var THEME_KEY = "masrofati-theme";
+var COLORS = ["#2563eb","#dc2626","#059669","#d97706","#7c3aed","#0891b2","#db2777","#65a30d","#9333ea","#ea580c","#0d9488","#e11d48","#4f46e5","#ca8a04"];
+var data = loadData();
+
+/* ====== أدوات آمنة (تشتغل حتى لو التخزين محظور) ====== */
+function loadData(){
+  try{ var d = JSON.parse(localStorage.getItem(STORE_KEY)); if(d && d.transactions) return d; }catch(e){}
+  return {transactions:[]};
+}
+function saveData(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){}
+}
+function fmt(n){ return Number(n).toLocaleString("ar-EG",{maximumFractionDigits:2}) + " ج.م"; }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function currentMonth(){ var d=new Date(); return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2); }
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function $(id){ return document.getElementById(id); }
+
+/* ====== عناصر ====== */
+var monthFilter = $("monthFilter");
+monthFilter.value = currentMonth();
+monthFilter.addEventListener("change", renderAll);
+
+var expCategory = $("expCategory"), i;
+expCategory.innerHTML = "";
+for(i=0;i<CATEGORIES.length;i++){
+  var o = document.createElement("option");
+  o.value = CATEGORIES[i]; o.textContent = CATEGORIES[i];
+  expCategory.appendChild(o);
+}
+
+/* التبويبات */
+var tabBtns = document.querySelectorAll(".tab-btn");
+function onTabClick(){
+  for(var j=0;j<tabBtns.length;j++){ tabBtns[j].classList.remove("active"); }
+  this.classList.add("active");
+  $("expenseForm").classList.toggle("hidden", this.getAttribute("data-tab")!=="expense");
+  $("incomeForm").classList.toggle("hidden", this.getAttribute("data-tab")!=="income");
+}
+for(i=0;i<tabBtns.length;i++){ tabBtns[i].addEventListener("click", onTabClick); }
+
+/* الوضع الليلي */
+var btnTheme = $("btnTheme");
+try{ if(localStorage.getItem(THEME_KEY)==="dark"){ document.body.classList.add("dark"); btnTheme.textContent="☀️"; } }catch(e){}
+btnTheme.addEventListener("click", function(){
+  document.body.classList.toggle("dark");
+  var dark = document.body.classList.contains("dark");
+  btnTheme.textContent = dark ? "☀️" : "🌙";
+  try{ localStorage.setItem(THEME_KEY, dark?"dark":"light"); }catch(e){}
+  renderAll();
+});
+
+/* التواريخ الافتراضية */
+var today = new Date(); today.setMinutes(today.getMinutes()-today.getTimezoneOffset());
+$("expDate").value = today.toISOString().slice(0,10);
+$("incDate").value = today.toISOString().slice(0,10);
+
+/* ====== الإضافة ====== */
+$("expenseForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var amt = parseFloat($("expAmount").value);
+  if(!(amt>0)){ alert("اكتب السعر بشكل صحيح"); return; }
+  data.transactions.push({id:uid(), type:"expense", category:expCategory.value,
+    desc:$("expDesc").value.trim(), amount:amt, date:$("expDate").value});
+  $("expDesc").value=""; $("expAmount").value="";
+  saveData(); renderAll();
+});
+
+$("incomeForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var amt = parseFloat($("incAmount").value);
+  if(!(amt>0)){ alert("اكتب المبلغ بشكل صحيح"); return; }
+  data.transactions.push({id:uid(), type:"income", category:"دخل",
+    desc:$("incDesc").value.trim() || "دخل", amount:amt, date:$("incDate").value});
+  $("incDesc").value=""; $("incAmount").value="";
+  saveData(); renderAll();
+});
+
+/* ====== العرض ====== */
+function monthTransactions(){
+  var m = monthFilter.value, out = [];
+  for(var j=0;j<data.transactions.length;j++){
+    var t = data.transactions[j];
+    if(t.date && t.date.indexOf(m)===0) out.push(t);
+  }
+  return out;
+}
+
+function calcTotals(txs){
+  var totals = {};
+  for(var j=0;j<txs.length;j++){
+    var t = txs[j];
+    if(t.type==="expense") totals[t.category] = (totals[t.category]||0) + t.amount;
+  }
+  return totals;
+}
+
+function renderAll(){
+  var txs = monthTransactions();
+  var income=0, expense=0, j;
+  for(j=0;j<txs.length;j++){
+    if(txs[j].type==="income") income+=txs[j].amount; else expense+=txs[j].amount;
+  }
+  var remaining = income - expense;
+
+  $("totalIncome").textContent = fmt(income);
+  $("totalExpense").textContent = fmt(expense);
+  $("remaining").textContent = fmt(remaining);
+
+  var hint = $("remainingHint");
+  if(income===0 && expense===0){ hint.textContent="لا توجد بيانات لهذا الشهر"; hint.style.color="var(--muted)"; }
+  else if(remaining<0){ hint.textContent="⚠️ مصروفاتك أكبر من دخلك!"; hint.style.color="var(--expense)"; }
+  else if(income>0){ hint.textContent="وفّرت " + Math.round(remaining/income*100) + "% من دخلك 👏"; hint.style.color="var(--income)"; }
+  else { hint.textContent=""; }
+
+  renderCatList(txs);
+  renderChart(txs);
+  renderLog(txs);
+}
+
+/* إجمالي كل بند */
+function renderCatList(txs){
+  var totals = calcTotals(txs);
+  var entries = [];
+  for(var k in totals){ entries.push([k, totals[k]]); }
+  entries.sort(function(a,b){ return b[1]-a[1]; });
+  var wrap = $("catList");
+  if(!entries.length){ wrap.innerHTML='<p style="color:var(--muted)">لا توجد مصروفات بعد 🎉</p>'; return; }
+  var max = entries[0][1] || 1, html = "";
+  for(var j=0;j<entries.length;j++){
+    var w = Math.max(4, Math.round(entries[j][1]/max*100));
+    html += '<div class="cat-item"><span class="name">'+esc(entries[j][0])+'</span>'+
+      '<div class="bar" style="width:'+w+'%"></div><span class="val">'+fmt(entries[j][1])+'</span></div>';
+  }
+  wrap.innerHTML = html;
+}
+
+/* مخطط دائري بدون أي مكتبات — Canvas خالص */
+function renderChart(txs){
+  var totals = calcTotals(txs);
+  var labels = [], values = [];
+  for(var k in totals){ labels.push(k); values.push(totals[k]); }
+  var canvas = $("chart"), empty = $("chartEmpty");
+  if(!values.length){ canvas.style.display="none"; empty.style.display="block"; return; }
+  canvas.style.display="block"; empty.style.display="none";
+
+  var dpr = window.devicePixelRatio || 1;
+  var cssW = canvas.parentNode.clientWidth - 20;
+  var cssH = 280;
+  canvas.style.width = cssW+"px"; canvas.style.height = cssH+"px";
+  canvas.width = cssW*dpr; canvas.height = cssH*dpr;
+  var ctx = canvas.getContext("2d");
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,cssW,cssH);
+
+  var cx = cssW/2, cy = cssH/2, R = Math.min(cssW,cssH)/2 - 12, r = R*0.55;
+  var total = 0;
+  for(var j=0;j<values.length;j++) total += values[j];
+
+  var dark = document.body.classList.contains("dark");
+  var start = -Math.PI/2;
+  for(j=0;j<values.length;j++){
+    var angle = values[j]/total * Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,start,start+angle);
+    ctx.closePath();
+    ctx.fillStyle = COLORS[j % COLORS.length];
+    ctx.fill();
+    ctx.strokeStyle = dark ? "#1e293b" : "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    start += angle;
+  }
+  /* ثقب الوسط */
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fillStyle = dark ? "#1e293b" : "#ffffff";
+  ctx.fill();
+  /* إجمالي في الوسط */
+  var sum=0; for(j=0;j<values.length;j++) sum+=values[j];
+  ctx.fillStyle = dark ? "#f1f5f9" : "#1f2937";
+  ctx.font = "bold 15px Tahoma";
+  ctx.textAlign = "center";
+  ctx.fillText("الإجمالي", cx, cy-8);
+  ctx.font = "bold 17px Tahoma";
+  ctx.fillText(Number(sum).toLocaleString("ar-EG"), cx, cy+14);
+
+  /* مفتاح الألوان */
+  var legend = "", x = 10, y = cssH - 16, rowH = 22;
+  ctx.font = "12px Tahoma"; ctx.textAlign = "right";
+  var itemsPerRow = Math.max(1, Math.floor((cssW-20)/130));
+  var col=0, row=0;
+  for(j=0;j<labels.length;j++){
+    var lx = cssW - 10 - col*130;
+    var ly = cssH - 8 - row*rowH;
+    ctx.fillStyle = COLORS[j % COLORS.length];
+    ctx.fillRect(lx-14, ly-10, 12, 12);
+    ctx.fillStyle = dark ? "#94a3b8" : "#6b7280";
+    var name = labels[j].length>10 ? labels[j].slice(0,10)+"…" : labels[j];
+    ctx.fillText(name, lx-20, ly);
+    col++;
+    if(col>=itemsPerRow){ col=0; row++; }
+  }
+}
+window.addEventListener("resize", function(){ renderAll(); });
+
+/* السجل */
+function renderLog(txs){
+  var q = $("search").value.trim();
+  var rows = txs.slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+  if(q){ rows = rows.filter(function(t){ return (t.category+(t.desc||"")).indexOf(q)!==-1; }); }
+  var body = $("logBody");
+  if(!rows.length){
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">لا توجد عمليات 📝</td></tr>';
+    return;
+  }
+  var html = "";
+  for(var j=0;j<rows.length;j++){
+    var t = rows[j];
+    html += '<tr>'+
+      '<td><span class="tag '+t.type+'">'+(t.type==="income"?"دخل":"مصروف")+'</span></td>'+
+      '<td>'+esc(t.type==="income" ? t.desc : t.category)+'</td>'+
+      '<td style="color:var(--muted)">'+esc(t.type==="income" ? "—" : (t.desc||"—"))+'</td>'+
+      '<td class="'+(t.type==="income"?"amount-in":"amount-out")+'">'+(t.type==="income"?"+":"−")+" "+fmt(t.amount)+'</td>'+
+      '<td>'+esc(t.date)+'</td>'+
+      '<td><button class="del-btn" data-id="'+t.id+'" title="حذف">🗑️</button></td></tr>';
+  }
+  body.innerHTML = html;
+  var btns = body.querySelectorAll(".del-btn");
+  for(j=0;j<btns.length;j++){ btns[j].addEventListener("click", onDel); }
+}
+function onDel(){
+  if(!confirm("متأكد من حذف العملية؟")) return;
+  var id = this.getAttribute("data-id");
+  data.transactions = data.transactions.filter(function(t){ return t.id!==id; });
+  saveData(); renderAll();
+}
+$("search").addEventListener("input", function(){ renderLog(monthTransactions()); });
+
+/* تصدير CSV (يفتح في Excel) */
+$("btnExport").addEventListener("click", function(){
+  var txs = monthTransactions();
+  if(!txs.length){ alert("لا توجد بيانات للتصدير"); return; }
+  var lines = ["النوع,البند/المصدر,التفاصيل,المبلغ,التاريخ"];
+  txs.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  for(var j=0;j<txs.length;j++){
+    var t = txs[j];
+    lines.push([t.type==="income"?"دخل":"مصروف", t.type==="income"?t.desc:t.category,
+      '"'+String(t.desc||"").replace(/"/g,'""')+'"', t.amount, t.date].join(","));
+  }
+  var blob = new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "مصروفات-"+monthFilter.value+".csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+});
+
+$("btnPrint").addEventListener("click", function(){ window.print(); });
+
+$("btnClear").addEventListener("click", function(){
+  if(!confirm("سيتم مسح كل عمليات هذا الشهر. متأكد؟")) return;
+  var m = monthFilter.value;
+  data.transactions = data.transactions.filter(function(t){ return !(t.date && t.date.indexOf(m)===0); });
+  saveData(); renderAll();
+});
+
+renderAll();
+</script>
 </body>
 </html>
